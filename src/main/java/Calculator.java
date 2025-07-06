@@ -21,14 +21,21 @@ public class Calculator {
     private final RecursiveExpressionEvaluator recursiveExpressionEvaluator;
 
     /**
-     * Constructs a Calculator instance with utility components.
+     * Constructs a Calculator instance with the specified dependencies.
+     *
+     * @param scanner The scanner for reading user input.
+     * @param tokenUtils The utility for tokenizing expressions.
+     * @param validator The utility for validating expressions.
+     * @param operationRegistry The registry of operations.
+     * @param recursiveExpressionEvaluator The evaluator for expressions.
      */
-    public Calculator() {
-        this.scanner = new Scanner(System.in);
-        this.tokenUtils = new TokenUtils();
-        this.validator = new ExpressionValidatorUtils(this.tokenUtils);
-        this.operationRegistry = new OperationRegistry();
-        this.recursiveExpressionEvaluator = new RecursiveExpressionEvaluator(operationRegistry, tokenUtils);
+    public Calculator(Scanner scanner, TokenUtils tokenUtils, ExpressionValidatorUtils validator,
+                      OperationRegistry operationRegistry, RecursiveExpressionEvaluator recursiveExpressionEvaluator) {
+        this.scanner = scanner;
+        this.tokenUtils = tokenUtils;
+        this.validator = validator;
+        this.operationRegistry = operationRegistry;
+        this.recursiveExpressionEvaluator = recursiveExpressionEvaluator;
     }
 
     /**
@@ -71,6 +78,11 @@ public class Calculator {
      * @param args command-line arguments (not used)
      */
     public static void main(String[] args) {
-        new Calculator().run();
+        final Scanner scanner = new Scanner(System.in);
+        final TokenUtils tokenUtils = new TokenUtils();
+        final ExpressionValidatorUtils validator = new ExpressionValidatorUtils(tokenUtils);
+        final OperationRegistry operationRegistry = new OperationRegistry();
+        final RecursiveExpressionEvaluator evaluator = new RecursiveExpressionEvaluator(operationRegistry, tokenUtils);
+        new Calculator(scanner, tokenUtils, validator, operationRegistry, evaluator).run();
     }
 }

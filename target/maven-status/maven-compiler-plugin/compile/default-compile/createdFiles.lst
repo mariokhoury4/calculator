@@ -1,0 +1,13 @@
+model\Operation.class
+model\PlusOperation.class
+model\MultiplicationOperation.class
+utils\Constants.class
+model\MinusOperation.class
+model\ExponentiationOperation.class
+model\DivisionOperation.class
+model\OperationRegistry.class
+model\RecursiveExpressionEvaluator.class
+model\ModuloOperation.class
+Calculator.class
+utils\ExpressionValidatorUtils.class
+utils\TokenUtils.class
