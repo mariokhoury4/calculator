@@ -1,9 +1,9 @@
-package model;
+package model.operation.basic;
 
 /**
  * This class implements the Operation interface to perform addition.
  */
-public class PlusOperation implements Operation{
+public class PlusOperation implements Operation {
 
     /**
      * Evaluates the sum of two Double values.

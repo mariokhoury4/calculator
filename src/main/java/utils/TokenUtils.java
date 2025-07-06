@@ -57,6 +57,17 @@ public class TokenUtils {
                 i++;
             }
 
+            // Handle function names
+            else if (Character.isLetter(ch)) {
+                int j = i;
+                while (j < sanitized.length() && Character.isLetter(sanitized.charAt(j))) {
+                    j++;
+                }
+                final String func = sanitized.substring(i, j);
+                tokens.add(func);
+                i = j;
+            }
+
             // Unknown character
             else {
                 throw new IllegalArgumentException("Invalid character in expression: " + ch);

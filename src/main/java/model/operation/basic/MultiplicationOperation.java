@@ -1,9 +1,9 @@
-package model;
+package model.operation.basic;
 
 /**
  * This class implements the Operation interface to perform multiplication.
  */
-public class MultiplicationOperation implements Operation{
+public class MultiplicationOperation implements Operation {
 
     /**
      * Evaluates the product of two Double values.

@@ -2,6 +2,8 @@ package utils;
 
 import java.util.List;
 
+import static utils.Constants.FUNCTION_MAP;
+
 /**
  * Utility class for validating tokenized expressions.
  */
@@ -24,14 +26,15 @@ public class ExpressionValidatorUtils {
      * @throws IllegalArgumentException if invalid.
      */
     public void validateEquation(final List<String> equationList) {
-        if (equationList.size() == 0) {
-            final String errorMessage = "Invalid input: No equation provided.";
-            throw new IllegalArgumentException(errorMessage);
+        if (equationList.isEmpty()) {
+            throw new IllegalArgumentException("Invalid input: No equation provided.");
         }
 
         final String firstToken = equationList.get(0);
-        if (!tokenUtils.isNumeric(firstToken) && !firstToken.equals("(")) {
-            throw new IllegalArgumentException("Invalid input: The equation should start with a number or '('.");
+        if (!tokenUtils.isNumeric(firstToken)
+                && !firstToken.equals("(")
+                && !FUNCTION_MAP.containsKey(firstToken)) {
+            throw new IllegalArgumentException("Invalid input: The equation should start with a number, '(', or a supported function.");
         }
 
         validateParentheses(equationList);

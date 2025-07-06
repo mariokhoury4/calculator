@@ -5,6 +5,8 @@ import utils.TokenUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static utils.Constants.FUNCTION_MAP;
+
 /**
  * Evaluates mathematical expressions recursively, handling parentheses and implicit multiplication.
  * This class uses an OperationRegistry to evaluate expressions and a TokenUtils for token manipulation.
@@ -27,15 +29,32 @@ public class RecursiveExpressionEvaluator {
     }
 
     /**
-     * Evaluates a list of tokens representing a mathematical expression.
-     * This method handles implicit multiplication by adding multiplication operators before parentheses.
-     *
-     * @param tokens The list of tokens to evaluate.
+     * Evaluates a mathematical expression represented as a list of tokens.
+     * @param tokens The list of tokens representing the expression to evaluate.
      * @return The result of the evaluated expression as a Double.
      */
     public Double evaluate(final List<String> tokens) {
-        List<String> updateTokensForParenthesis = addMultiplicationOperationBeforeParenthesis(tokens);
-        return evaluateRecursive(updateTokensForParenthesis);
+        List<String> updatedTokens = addMultiplicationOperationBeforeParenthesis(tokens);
+        updatedTokens = mergeFunctionWithParenthesis(updatedTokens);
+        return evaluateRecursive(updatedTokens);
+    }
+
+    /**
+     * Recursively evaluates a list of tokens representing a mathematical expression.
+     * @param tokens The list of tokens to evaluate.
+     * @return The result of the evaluated expression as a Double.
+     */
+    private List<String> mergeFunctionWithParenthesis(final List<String> tokens) {
+        List<String> updatedTokens = new ArrayList<>();
+        for (int i = 0; i < tokens.size(); i++) {
+            final String token = tokens.get(i);
+            if (i < tokens.size() - 1 && FUNCTION_MAP.containsKey(token) && "(".equals(tokens.get(i + 1))) {
+                updatedTokens.add(token); // keep "sin"
+            } else {
+                updatedTokens.add(token);
+            }
+        }
+        return updatedTokens;
     }
 
     /**
@@ -78,15 +97,31 @@ public class RecursiveExpressionEvaluator {
      * @return The result of the evaluated expression as a Double.
      */
     private Double evaluateRecursive(final List<String> tokens) {
-        while(tokens.contains("(")) {
-            int openIdx = -1;
-            int closeIdx = -1;
+        // Step 1: Evaluate functions like sin(90)
+        for (int i = 0; i < tokens.size() - 1; i++) {
+            final String token = tokens.get(i);
+            if (FUNCTION_MAP.containsKey(token) && "(".equals(tokens.get(i + 1))) {
+                int openIdx = i + 1;
+                int closeIdx = findMatchingParenthesis(tokens, openIdx);
 
-            for (int i = 0; i < tokens.size(); i++) {
-                if ("(".equals(tokens.get(i))) {
-                    openIdx = i;
+                List<String> innerExpr = new ArrayList<>(tokens.subList(openIdx + 1, closeIdx));
+                double value = evaluateRecursive(innerExpr);
+                double result = FUNCTION_MAP.get(token).apply(value);
+
+                for (int j = 0; j <= closeIdx - i; j++) {
+                    tokens.remove(i);
                 }
+                tokens.add(i, String.valueOf(result));
 
+                return evaluateRecursive(tokens);
+            }
+        }
+
+        // Step 2: Evaluate parentheses
+        while (tokens.contains("(")) {
+            int openIdx = -1, closeIdx = -1;
+            for (int i = 0; i < tokens.size(); i++) {
+                if ("(".equals(tokens.get(i))) openIdx = i;
                 if (")".equals(tokens.get(i))) {
                     closeIdx = i;
                     break;
@@ -94,18 +129,32 @@ public class RecursiveExpressionEvaluator {
             }
 
             if (openIdx == -1 || closeIdx == -1 || openIdx > closeIdx) {
-                throw new IllegalArgumentException("Mismatched parentheses");
+                throw new IllegalArgumentException("Mismatched parentheses.");
             }
-            final List<String> subExpr = tokens.subList(openIdx + 1, closeIdx);
-            double result = evaluateRecursive(new ArrayList<>(subExpr));
 
-            // Replace (subExpr) with result
+            List<String> innerExpr = new ArrayList<>(tokens.subList(openIdx + 1, closeIdx));
+            double result = evaluateRecursive(innerExpr);
+
             for (int i = 0; i <= closeIdx - openIdx; i++) {
                 tokens.remove(openIdx);
             }
             tokens.add(openIdx, String.valueOf(result));
         }
 
+        // Step 3: Flat evaluation
         return registry.evaluateExpression(tokens);
+    }
+
+    /**
+     * Finds the matching closing parenthesis given the opening index.
+     */
+    private int findMatchingParenthesis(List<String> tokens, int startIdx) {
+        int balance = 0;
+        for (int i = startIdx; i < tokens.size(); i++) {
+            if ("(".equals(tokens.get(i))) balance++;
+            if (")".equals(tokens.get(i))) balance--;
+            if (balance == 0) return i;
+        }
+        throw new IllegalArgumentException("Mismatched parentheses.");
     }
 }

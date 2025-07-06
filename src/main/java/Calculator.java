@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static utils.Constants.EXIT;
+import static utils.Constants.HISTORY;
 
 /**
  * Calculator class to evaluate simple mathematical expressions.
@@ -19,6 +20,8 @@ public class Calculator {
     private final ExpressionValidatorUtils validator;
     private final TokenUtils tokenUtils;
     private final RecursiveExpressionEvaluator recursiveExpressionEvaluator;
+
+    private String history = "History: \n";
 
     /**
      * Constructs a Calculator instance with the specified dependencies.
@@ -46,15 +49,22 @@ public class Calculator {
 
         while (true) {
             final String equation = scanner.nextLine();
-
             if (EXIT.equalsIgnoreCase(equation)) {
                 System.out.println("Exiting the calculator.");
                 break;
             }
+
+            if (HISTORY.equalsIgnoreCase(equation)) {
+                System.out.println(history);
+                continue;
+            }
+
+            history += equation;
             try {
                 final List<String> equationList = tokenUtils.tokenizeEquation(equation);
                 validator.validateEquation(equationList);
                 final Double result = recursiveExpressionEvaluator.evaluate(equationList);
+                history += " = " + result + "\n";
                 System.out.println("Result: " + result);
             } catch (IllegalArgumentException e) {
                 System.out.println("ERROR: " + e.getMessage());

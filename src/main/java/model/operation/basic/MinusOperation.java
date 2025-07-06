@@ -1,4 +1,4 @@
-package model;
+package model.operation.basic;
 
 /**
  * This class implements the Operation interface to perform subtraction.

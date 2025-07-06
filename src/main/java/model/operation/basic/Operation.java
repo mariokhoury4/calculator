@@ -1,4 +1,4 @@
-package model;
+package model.operation.basic;
 
 /**
  * This interface defines a mathematical operation that takes two Double arguments
