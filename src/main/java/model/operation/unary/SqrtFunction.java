@@ -3,8 +3,7 @@ package model.operation.unary;
 /**
  * This class implements the Function interface to perform the square root operation.
  */
-public class SqrtFunction implements Function
-{
+public class SqrtFunction implements Function {
     /**
      * Applies the square root function to the given Double number.
      * @param number The number to which the square root function is applied.

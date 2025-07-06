@@ -1,6 +1,6 @@
 # Java Calculator
 
-A simple yet powerful command-line calculator application written in Java. This tool evaluates mathematical expressions with support for basic arithmetic operations, parentheses, and operator precedence.
+A powerful, extensible command-line calculator written in Java. This tool evaluates mathematical expressions with full operator precedence, function support, implicit multiplication, and expression history.
 
 [![Java](https://img.shields.io/badge/Java-17-blue)](https://www.oracle.com/java/)
 [![License](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
@@ -10,142 +10,143 @@ A simple yet powerful command-line calculator application written in Java. This 
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Supported Operations](#supported-operations)
+- [Supported Operations & Functions](#supported-operations--functions)
+- [Constants](#constants)
 - [Project Structure](#project-structure)
 - [Testing](#testing)
 - [Contributing](#contributing)
 - [License](#license)
 
+---
+
 ## Features
 
-- Evaluates mathematical expressions with proper operator precedence.
-- Supports parentheses for grouped expressions.
-- Handles implicit multiplication (e.g., `2(3+4)` is interpreted as `2*(3+4)`).
-- Includes basic arithmetic operations: addition, subtraction, multiplication, division, modulo, and exponentiation.
-- Provides clear error messages for invalid input.
+- Evaluate complex mathematical expressions with operator precedence and parentheses.
+- Supports implicit multiplication (e.g., `2(3 + 4)` → `2 * (3 + 4)`).
+- Includes standard arithmetic operators and advanced mathematical functions.
+- Supports constants `pi` and `e` as built-in values.
+- View expression history with the `history` command.
+- Graceful error handling with clear messages.
+
+---
 
 ## Installation
 
 ### Prerequisites
 
 - Java Development Kit (JDK) 17 or higher.
-- Maven (for building and dependency management).
+- Maven (for building and running the project).
 
 ### Steps
 
-1. **Clone the Repository** (if applicable):
+1. **Clone the Repository**:
    ```bash
    git clone <repository-url>
    cd Calculator
-   ```
-
 2. **Build the Project**:
-   Ensure you have Maven installed. Run the following command in the project root directory:
    ```bash
    mvn clean install
    ```
-
 3. **Run the Application**:
-   After building, you can run the calculator using:
    ```bash
    java -jar target/Calculator.jar
    ```
-   Alternatively, if you haven't packaged it into a JAR:
+   **Or**
    ```bash
    mvn exec:java -Dexec.mainClass="Calculator"
    ```
 
 ## Usage
+1. Start the calculator
+2. Type an expression (e.q., `2 + 3 * (4 - 1)` or `sin(pi / 2)`)
+3. Press Enter to evaluate the expression
+4. Type `history` to view previous expressions
+5. Type `exit` to quit the application
 
-1. Start the calculator application.
-2. Enter a mathematical expression with spaces between numbers and operators (e.g., `2 + 3 * 4`).
-3. Press Enter to see the result.
-4. Type `exit` to close the application.
+### Example Input
+- `2 + 3 * 4` → `14.0`
+- `sin(pi / 2)` → `1.0`
+- `2(3 + 4)` → `14.0`
+- `abs(round(-2.8) + floor(1.5))` → `2.0`
+- `history` → Displays previous expressions
+- `exit` → Exits the application
 
-### Example Inputs and Outputs
+## Supported Operations & Functions
+### Arithmetic Operations
 
-- Input: `2 + 3 * 4`
-  - Output: `Result: 14.0` (demonstrates operator precedence)
-- Input: `( 2 + 3 ) * 4`
-  - Output: `Result: 20.0` (demonstrates parentheses)
-- Input: `2 ( 3 + 4 )`
-  - Output: `Result: 14.0` (demonstrates implicit multiplication)
+| Operation      | Symbol | Precedence |
+| -------------- | ------ | ---------- |
+| Addition       | `+`    | Low        |
+| Subtraction    | `-`    | Low        |
+| Multiplication | `*`    | Medium     |
+| Division       | `/`    | Medium     |
+| Modulo         | `%`    | Medium     |
+| Exponentiation | `^`    | High       |
+| Parentheses    | `()`   | Highest    |
 
-## Supported Operations
+### Mathematical Functions
 
-| Operation        | Symbol | Precedence       |
-|------------------|--------|------------------|
-| Addition         | `+`    | Low              |
-| Subtraction      | `-`    | Low              |
-| Multiplication   | `*`    | Medium           |
-| Division         | `/`    | Medium           |
-| Modulo           | `%`    | Medium           |
-| Exponentiation   | `^`    | High             |
-| Parentheses      | `(` `)`| Highest (grouping) |
+| Function   | Description                   |
+| ---------- | ----------------------------- |
+| `sin(x)`   | Sine (degrees)                |
+| `cos(x)`   | Cosine (degrees)              |
+| `tan(x)`   | Tangent (degrees)             |
+| `sqrt(x)`  | Square root                   |
+| `log(x)`   | Logarithm base 10             |
+| `ln(x)`    | Natural logarithm (base *e*)  |
+| `exp(x)`   | e raised to the power of *x*  |
+| `abs(x)`   | Absolute value                |
+| `ceil(x)`  | Round up to nearest integer   |
+| `floor(x)` | Round down to nearest integer |
+| `round(x)` | Round to the nearest integer  |
+
+
+### Constants
+
+| Constant | Value           |
+| -------- | --------------- |
+| `pi`     | 3.1415926535... |
+| `e`      | 2.7182818284... |
+
 
 ## Project Structure
 
-The project follows a standard Maven structure with clear separation of concerns:
-
-```
 Calculator/
-├── pom.xml                       # Maven configuration file
+├── pom.xml
 ├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   ├── Calculator.java   # Main application class
-│   │   │   ├── model/            # Core logic for operations and evaluation
-│   │   │   │   ├── Operation.java
-│   │   │   │   ├── OperationRegistry.java
-│   │   │   │   ├── RecursiveExpressionEvaluator.java
-│   │   │   │   └── ...           # Individual operation implementations
-│   │   │   └── utils/            # Utility classes for tokenization and validation
-│   │   │       ├── Constants.java
-│   │   │       ├── ExpressionValidatorUtils.java
-│   │   │       └── TokenUtils.java
-│   └── test/
-│       └── java/                 # Unit tests
-│           ├── CalculatorTest.java
-│           ├── model/
-│           │   └── RecursiveExpressionEvaluatorTest.java
-│           └── utils/
-│               └── TokenUtilsTest.java
-└── target/                       # Compiled output (generated by Maven)
-```
-
-### Key Components
-
-- **Calculator**: Main class handling user input and output.
-- **RecursiveExpressionEvaluator**: Evaluates expressions recursively, handling parentheses.
-- **OperationRegistry**: Manages operator precedence and operation evaluation.
-- **TokenUtils**: Tokenizes input strings into manageable parts.
-- **ExpressionValidatorUtils**: Validates input for correctness.
+│   ├── main/java/
+│   │   ├── Calculator.java
+│   │   ├── model/
+│   │   │   ├── OperationRegistry.java
+│   │   │   ├── RecursiveExpressionEvaluator.java
+│   │   │   └── operation/
+│   │   │       ├── basic/        # Binary operations (+, -, *, etc.)
+│   │   │       └── unary/        # Unary functions (sin, cos, etc.)
+│   │   └── utils/
+│   │       ├── TokenUtils.java
+│   │       ├── Constants.java
+│   │       └── ExpressionValidatorUtils.java
+│   └── test/java/
+│       └── CalculatorTest.java
+│       └── utils/TokenUtilsTest.java
+│       └── model/RecursiveExpressionEvaluatorTest.java
 
 ## Testing
-
-Unit tests are implemented using JUnit 5 to ensure the reliability of core components. To run the tests:
-
+To run the tests, use the following command:
 ```bash
 mvn test
 ```
 
-Current test coverage includes:
-- Overall calculator functionality (`CalculatorTest`).
-- Tokenization logic (`TokenUtilsTest`).
-- Expression evaluation with precedence and parentheses (`RecursiveExpressionEvaluatorTest`).
+Test coverage includes:
+- Tokenization and validation 
+- Expression evaluation with operator precedence 
+- Function and constant handling
 
 ## Contributing
+Contributions are welcome!
+1. Fork the repository 
+2. Create a branch for your feature 
+3. Add code and unit tests 
+4. Open a pull request with a clear description
 
-Contributions are welcome! If you'd like to enhance this calculator (e.g., adding new operations or features), please follow these steps:
-
-1. Fork the repository (if applicable).
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and write corresponding unit tests.
-4. Ensure all tests pass with `mvn test`.
-5. Submit a pull request with a clear description of your changes.
-
-Please adhere to standard Java coding conventions and include Javadoc for public methods.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details (if a license file exists, or adjust as needed).
+Please follow standard Java conventions and include Javadoc for public methods.

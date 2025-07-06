@@ -3,7 +3,9 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static utils.Constants.E_CONSTANT;
 import static utils.Constants.OPERATION_MAP;
+import static utils.Constants.PI_CONSTANT;
 
 /**
  * Utility class for tokenizing and validating mathematical expressions.
@@ -63,8 +65,16 @@ public class TokenUtils {
                 while (j < sanitized.length() && Character.isLetter(sanitized.charAt(j))) {
                     j++;
                 }
-                final String func = sanitized.substring(i, j);
-                tokens.add(func);
+                final String identifier = sanitized.substring(i, j);
+
+                // Handle constants
+                if (PI_CONSTANT.equalsIgnoreCase(identifier)) {
+                    tokens.add(String.valueOf(Math.PI));
+                } else if (E_CONSTANT.equalsIgnoreCase(identifier)) {
+                    tokens.add(String.valueOf(Math.E));
+                } else {
+                    tokens.add(identifier); // assume function name (sin, cos, etc.)
+                }
                 i = j;
             }
 

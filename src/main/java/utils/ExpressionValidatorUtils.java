@@ -2,7 +2,9 @@ package utils;
 
 import java.util.List;
 
+import static utils.Constants.CLOSE_PARENTHESIS;
 import static utils.Constants.FUNCTION_MAP;
+import static utils.Constants.OPEN_PARENTHESIS;
 
 /**
  * Utility class for validating tokenized expressions.
@@ -32,7 +34,7 @@ public class ExpressionValidatorUtils {
 
         final String firstToken = equationList.get(0);
         if (!tokenUtils.isNumeric(firstToken)
-                && !firstToken.equals("(")
+                && !firstToken.equals(OPEN_PARENTHESIS)
                 && !FUNCTION_MAP.containsKey(firstToken)) {
             throw new IllegalArgumentException("Invalid input: The equation should start with a number, '(', or a supported function.");
         }
@@ -43,10 +45,10 @@ public class ExpressionValidatorUtils {
     private void validateParentheses(List<String> tokens) {
         int balance = 0;
         for (String token : tokens) {
-            if ("(".equals(token)) {
+            if (OPEN_PARENTHESIS.equals(token)) {
                 balance++;
             }
-            else if (")".equals(token)) {
+            else if (CLOSE_PARENTHESIS.equals(token)) {
                 balance--;
             }
             if (balance < 0) {

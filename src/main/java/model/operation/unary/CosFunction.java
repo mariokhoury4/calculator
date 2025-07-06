@@ -3,8 +3,7 @@ package model.operation.unary;
 /**
  * This class implements the Function interface to perform the cosine operation.
  */
-public class CosFunction implements Function
-{
+public class CosFunction implements Function {
     /**
      * Applies the cosine function to the given Double number.
      * @param number The number to which the cosine function is applied.

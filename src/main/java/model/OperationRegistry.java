@@ -6,6 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static utils.Constants.ADDITION_SIGN;
+import static utils.Constants.DIVISION_SIGN;
+import static utils.Constants.EXPONENTIATION_SIGN;
+import static utils.Constants.MINUS_SIGN;
+import static utils.Constants.MODULO_SIGN;
+import static utils.Constants.MULTIPLICATION_SIGN;
 import static utils.Constants.OPERATION_MAP;
 
 
@@ -33,9 +39,10 @@ public class OperationRegistry {
      * @throws IllegalArgumentException if the expression format is invalid.
      */
     public Double evaluateExpression(final List<String> equationList) {
-        final List<String> afterExponential = evaluateExpressionBasedOnSign(equationList, Set.of("^"));
-        final List<String> afterModMulDiv = evaluateExpressionBasedOnSign(afterExponential, Set.of("*", "/", "%"));
-        return Double.valueOf(evaluateExpressionBasedOnSign(afterModMulDiv, Set.of("+", "-")).get(0));
+        final List<String> afterExponential = evaluateExpressionBasedOnSign(equationList, Set.of(EXPONENTIATION_SIGN));
+        final List<String> afterModMulDiv = evaluateExpressionBasedOnSign(
+                afterExponential, Set.of(MULTIPLICATION_SIGN, DIVISION_SIGN, MODULO_SIGN));
+        return Double.valueOf(evaluateExpressionBasedOnSign(afterModMulDiv, Set.of(ADDITION_SIGN, MINUS_SIGN)).get(0));
     }
 
     /**
