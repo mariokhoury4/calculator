@@ -44,8 +44,9 @@ public class Constants {
     public static final String EXPONENTIATION_SIGN = "^";
     public static final String PI_CONSTANT = "pi";
     public static final String E_CONSTANT = "e";
+    public static final String EQUAL_SIGN = "=";
 
-
+    public static final String VARIABLE_REGEX = "[a-zA-Z][a-zA-Z0-9]*";
 
     /**
      * A map of supported arithmetic operators to their corresponding {@link Operation} implementations.

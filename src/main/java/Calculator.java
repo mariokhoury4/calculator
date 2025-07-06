@@ -1,9 +1,14 @@
+import logic.ExpressionProcessor;
 import model.OperationRegistry;
 import model.RecursiveExpressionEvaluator;
 import utils.ExpressionValidatorUtils;
+import utils.HistoryManager;
 import utils.TokenUtils;
+import utils.VariableResolver;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import static utils.Constants.EXIT;
@@ -16,29 +21,34 @@ import static utils.Constants.HISTORY;
 public class Calculator {
 
     private final Scanner scanner;
-    private final OperationRegistry operationRegistry;
-    private final ExpressionValidatorUtils validator;
-    private final TokenUtils tokenUtils;
-    private final RecursiveExpressionEvaluator recursiveExpressionEvaluator;
+    private final HistoryManager historyManager;
+    private final ExpressionProcessor processor;
 
+    /**
+     * Saves the history of calculations.
+     */
     private String history = "History: \n";
 
     /**
-     * Constructs a Calculator instance with the specified dependencies.
-     *
-     * @param scanner The scanner for reading user input.
-     * @param tokenUtils The utility for tokenizing expressions.
-     * @param validator The utility for validating expressions.
-     * @param operationRegistry The registry of operations.
-     * @param recursiveExpressionEvaluator The evaluator for expressions.
+     * Saves variables and their values for later use.
      */
-    public Calculator(Scanner scanner, TokenUtils tokenUtils, ExpressionValidatorUtils validator,
-                      OperationRegistry operationRegistry, RecursiveExpressionEvaluator recursiveExpressionEvaluator) {
-        this.scanner = scanner;
-        this.tokenUtils = tokenUtils;
-        this.validator = validator;
-        this.operationRegistry = operationRegistry;
-        this.recursiveExpressionEvaluator = recursiveExpressionEvaluator;
+    private final Map<String, Double> variableMap = new HashMap<>();
+
+
+    /**
+     * Constructor to initialize the calculator with necessary utilities.
+     */
+    public Calculator() {
+        this.scanner = new Scanner(System.in);
+
+        final Map<String, Double> variableMap = new HashMap<>();
+        final TokenUtils tokenUtils = new TokenUtils();
+        final ExpressionValidatorUtils validator = new ExpressionValidatorUtils(tokenUtils);
+        final OperationRegistry operationRegistry = new OperationRegistry();
+        final RecursiveExpressionEvaluator evaluator = new RecursiveExpressionEvaluator(operationRegistry, tokenUtils);
+        final VariableResolver resolver = new VariableResolver(variableMap);
+        this.historyManager = new HistoryManager();
+        this.processor = new ExpressionProcessor(tokenUtils, validator, evaluator, resolver, variableMap);
     }
 
     /**
@@ -48,26 +58,29 @@ public class Calculator {
         welcomeMessage();
 
         while (true) {
-            final String equation = scanner.nextLine();
-            if (EXIT.equalsIgnoreCase(equation)) {
+            final String equationInput = scanner.nextLine();
+            if (EXIT.equalsIgnoreCase(equationInput)) {
                 System.out.println("Exiting the calculator.");
                 break;
             }
 
-            if (HISTORY.equalsIgnoreCase(equation)) {
-                System.out.println(history);
+            if (HISTORY.equalsIgnoreCase(equationInput)) {
+                historyManager.print();
                 continue;
             }
 
-            history += equation;
             try {
-                final List<String> equationList = tokenUtils.tokenizeEquation(equation);
-                validator.validateEquation(equationList);
-                final Double result = recursiveExpressionEvaluator.evaluate(equationList);
-                history += " = " + result + "\n";
-                System.out.println("Result: " + result);
-            } catch (IllegalArgumentException e) {
+                if (processor.tryAssignVariable(equationInput)) {
+                    historyManager.addRaw(equationInput + "\n");
+                } else {
+                    final Double result = processor.evaluateExpression(equationInput);
+                    historyManager.add(equationInput, result);
+                    System.out.println("Result: " + result);
+                }
+            } catch (final IllegalArgumentException e) {
                 System.out.println("ERROR: " + e.getMessage());
+            } catch (final Exception e) {
+                System.out.println("ERROR: An unexpected error occurred.");
             }
         }
         scanner.close();
@@ -78,21 +91,17 @@ public class Calculator {
      */
     private static void welcomeMessage() {
         System.out.println("Welcome to the Java Calculator!");
-        System.out.println("Type an expression with spaces (e.g., 2 + 3 * 4)");
+        System.out.println("Type an expression (e.g., 2 + 3 * 4) or assignment (e.g., x = 5)");
+        System.out.println("Type 'history' to view calculation history.");
         System.out.println("Type 'exit' to quit.\n");
     }
 
+
     /**
-     * Main method that starts the calculator.
-     *
-     * @param args command-line arguments (not used)
+     * Main method to start the calculator application.
+     * @param args Command line arguments (not used).
      */
-    public static void main(String[] args) {
-        final Scanner scanner = new Scanner(System.in);
-        final TokenUtils tokenUtils = new TokenUtils();
-        final ExpressionValidatorUtils validator = new ExpressionValidatorUtils(tokenUtils);
-        final OperationRegistry operationRegistry = new OperationRegistry();
-        final RecursiveExpressionEvaluator evaluator = new RecursiveExpressionEvaluator(operationRegistry, tokenUtils);
-        new Calculator(scanner, tokenUtils, validator, operationRegistry, evaluator).run();
+    public static void main(final String[] args) {
+        new Calculator().run();
     }
 }

@@ -37,7 +37,7 @@ public class CalculatorTest {
         outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
         
-        calculator = new Calculator(scanner, tokenUtils, validator, operationRegistry, evaluator);
+        calculator = new Calculator();
     }
 
     @Test
