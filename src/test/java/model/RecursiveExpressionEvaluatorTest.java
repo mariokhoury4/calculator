@@ -6,7 +6,9 @@ import utils.TokenUtils;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+
 
 /**
  * Unit tests for the RecursiveExpressionEvaluator class.
@@ -63,5 +65,58 @@ public class RecursiveExpressionEvaluatorTest {
         final List<String> tokens = Arrays.asList("2", "^", "3");
         final Double result = evaluator.evaluate(tokens);
         assertEquals(8.0, result, "2 ^ 3 should equal 8.0");
+    }
+
+    @Test
+    public void testEvaluate_UnaryFunction_Sqrt() {
+        final List<String> tokens = Arrays.asList("sqrt", "(", "4", ")");
+        final Double result = evaluator.evaluate(tokens);
+        assertEquals(2.0, result, "sqrt(4) should equal 2.0");
+    }
+
+    @Test
+    public void testEvaluate_UnaryFunction_Sin() {
+        final List<String> tokens = Arrays.asList("sin", "(", "0", ")");
+        final Double result = evaluator.evaluate(tokens);
+        assertEquals(0.0, result, 0.0001, "sin(0) should equal 0.0");
+    }
+
+    @Test
+    public void testEvaluate_ComplexExpressionWithFunctions() {
+        final List<String> tokens = Arrays.asList("2", "*", "sin", "(", "0", ")", "+", "sqrt", "(", "9", ")");
+        final Double result = evaluator.evaluate(tokens);
+        assertEquals(3.0, result, 0.0001, "2 * sin(0) + sqrt(9) should equal 3.0");
+    }
+
+    @Test
+    public void testEvaluate_MismatchedParentheses() {
+        final List<String> tokens = Arrays.asList("(", "2", "+", "3");
+        assertThrowsExactly(IllegalArgumentException.class, () -> evaluator.evaluate(tokens), "Mismatched parentheses should throw exception");
+    }
+
+    @Test
+    public void testEvaluate_DivisionByZero() {
+        final List<String> tokens = Arrays.asList("6", "/", "0");
+        assertThrowsExactly(IllegalArgumentException.class, () -> evaluator.evaluate(tokens), "Division by zero should throw exception");
+    }
+
+    @Test
+    public void testEvaluate_LargeExpression() {
+        final List<String> tokens = Arrays.asList("1", "+", "2", "*", "3", "+", "4", "*", "5", "+", "6", "*", "7");
+        final Double result = evaluator.evaluate(tokens);
+        assertEquals(69.0, result, "1 + 2 * 3 + 4 * 5 + 6 * 7 should equal 69.0");
+    }
+
+    @Test
+    public void testEvaluate_NestedFunctions() {
+        final List<String> tokens = Arrays.asList("sqrt", "(", "abs", "(", "-4", ")", ")");
+        final Double result = evaluator.evaluate(tokens);
+        assertEquals(2.0, result, "sqrt(abs(-4)) should equal 2.0");
+    }
+
+    @Test
+    public void testEvaluate_InvalidFunctionArgument() {
+        final List<String> tokens = Arrays.asList("sqrt", "(", "-4", ")");
+        assertThrowsExactly(IllegalArgumentException.class, () -> evaluator.evaluate(tokens), "sqrt(-4) should throw exception for invalid argument");
     }
 }
