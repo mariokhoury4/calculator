@@ -7,7 +7,6 @@ import utils.TokenUtils;
 import utils.VariableResolver;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -23,17 +22,6 @@ public class Calculator {
     private final Scanner scanner;
     private final HistoryManager historyManager;
     private final ExpressionProcessor processor;
-
-    /**
-     * Saves the history of calculations.
-     */
-    private String history = "History: \n";
-
-    /**
-     * Saves variables and their values for later use.
-     */
-    private final Map<String, Double> variableMap = new HashMap<>();
-
 
     /**
      * Constructor to initialize the calculator with necessary utilities.
